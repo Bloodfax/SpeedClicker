@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Speed Clicker</title>
+    <style>
+      body {
+        background-color: #f2f2f2;
+        text-align: center;
+        font-size: 2rem;
+      }
+
+      #clickArea {
+        width: 300px;
+        height: 300px;
+        background-color: #aaa;
+        border-radius: 50%;
+        margin: 50px auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      #timer {
+        margin-top: 20px;
+        font-size: 4rem;
+      }
+
+      #clickCount {
+        margin-top: 20px;
+        font-size: 3rem;
+      }
+
+      #playAgain {
+        margin-top: 20px;
+        font-size: 2rem;
+        display: none;
+        cursor: pointer;
+      }
+
+      #scoreboard {
+        margin-top: 20px;
+        font-size: 2rem;
+        text-align: center;
+      }
+
+      #scoreboard li {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="clickArea"></div>
+    <div id="timer"></div>
+    <div id="clickCount"></div>
+    <div id="playAgain">Play Again</div>
+    <div id="scoreboard"></div>
+
+    <script>
+      const clickArea = document.getElementById("clickArea");
+      const timerDisplay = document.getElementById("timer");
+      const clickCountDisplay = document.getElementById("clickCount");
+      const playAgainButton = document.getElementById("playAgain");
+      const scoreboard = document.getElementById("scoreboard");
+
+      let intervalId;
+      let timeLeft;
+      let clickCount;
+
+      // Load previous high scores from localstorage
+      const highScores = JSON.parse(localStorage.getItem("highScores") || "[]");
+
+      // Display previous high scores in scoreboard
+      scoreboard.innerHTML = `<p>Previous High Scores:</p>${highScores
+        .map((score) => `<li>${score} clicks</li>`)
+        .join("")}`;
+
+      clickArea.addEventListener("click", () => {
+        if (!intervalId) {
+          timeLeft = Number(prompt("Enter interval in seconds:"));
+          clickCount = 0;
+          clickCountDisplay.innerText = clickCount;
+          timerDisplay.innerText = timeLeft;
+
+          intervalId = setInterval(() => {
+            timeLeft--;
+            timerDisplay.innerText = timeLeft;
+
+            if (timeLeft === 0) {
+              clearInterval(intervalId);
+              intervalId = null;
+              clickArea.style.display = "none";
+              clickCountDisplay.style.display = "none";
+              playAgainButton.style.display = "block";
+
+              // Save click count in localstorage
+              highScores.push(clickCount);
+              localStorage.setItem("highScores", JSON.stringify(highScores));
+
+              // Update scoreboard
+              scoreboard.innerHTML = `<p>Previous High Scores:</p>${highScores
+                .map((score) => `<li>${score} clicks</li>`)
+                .join("")}`;
+            }
+          }, 1000);
+        } else {
+          clickCount++;
+          clickCountDisplay.innerText = clickCount;
+        }
+      });
+
+      playAgainButton.addEventListener("click", () => {
+        clickArea.style.display = "flex";
+        clickCountDisplay.style.display = "block";
+        playAgainButton.style.display = "none";
+      });
+    </script>
+  </body>
+</html>
